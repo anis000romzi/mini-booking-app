@@ -118,7 +118,6 @@ const setQuickTimeRange = (hours) => {
     loadAvailableRooms();
 };
 
-// Modal functions
 const openBookingModal = (room) => {
     selectedRoom.value = room;
     bookingStartAt.value = startAt.value;
@@ -182,9 +181,9 @@ const submitBooking = async () => {
     <div class="min-h-screen bg-gray-100">
         <NavBar />
 
-        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="bg-white shadow rounded-lg p-6 mb-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">Select Date Range</h2>
+        <main class="py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="p-6 mb-6 bg-white rounded-lg shadow">
+                <h2 class="mb-4 text-lg font-medium text-gray-900">Select Date Range</h2>
                 <div class="flex flex-wrap gap-2 mb-4">
                     <button @click="setQuickTimeRange(1)"
                         class="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md transition-colors">
@@ -208,9 +207,9 @@ const submitBooking = async () => {
                     </button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                        <label for="startAt" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="startAt" class="block mb-1 text-sm font-medium text-gray-700">
                             Start Date & Time
                         </label>
                         <input type="datetime-local" id="startAt" v-model="startAt"
@@ -221,7 +220,7 @@ const submitBooking = async () => {
                         </p>
                     </div>
                     <div>
-                        <label for="endAt" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="endAt" class="block mb-1 text-sm font-medium text-gray-700">
                             End Date & Time
                         </label>
                         <input type="datetime-local" id="endAt" v-model="endAt"
@@ -233,15 +232,15 @@ const submitBooking = async () => {
                     </div>
                 </div>
                 <button @click="loadAvailableRooms" :disabled="loading"
-                    class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+                    class="px-4 py-2 mt-4 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
                     {{ loading ? "Loading..." : "Search Available Rooms" }}
                 </button>
             </div>
 
-            <div class="bg-white shadow rounded-lg p-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">
+            <div class="p-6 bg-white rounded-lg shadow">
+                <h2 class="mb-4 text-lg font-medium text-gray-900">
                     Available Rooms
-                    <span class="text-sm text-gray-500 ml-2">
+                    <span class="ml-2 text-sm text-gray-500">
                         ({{ availableRoomsList.length }} room{{
                             availableRoomsList.length !== 1 ? "s" : ""
                         }}
@@ -249,7 +248,7 @@ const submitBooking = async () => {
                     </span>
                 </h2>
 
-                <div class="mb-4 p-3 bg-blue-50 rounded-md">
+                <div class="p-3 mb-4 rounded-md bg-blue-50">
                     <p class="text-sm text-blue-800">
                         Showing rooms available from
                         <span class="font-medium">{{ startAt.replace("T", " ") }}</span>
@@ -258,31 +257,29 @@ const submitBooking = async () => {
                     </p>
                 </div>
 
-                <div v-if="loading" class="text-center py-8">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                <div v-if="loading" class="py-8 text-center">
+                    <div class="w-12 h-12 mx-auto border-b-2 border-indigo-600 rounded-full animate-spin"></div>
                     <p class="mt-4 text-gray-600">Loading available rooms...</p>
                 </div>
 
-                <div v-else-if="availableRoomsList.length === 0" class="text-center py-8">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                <div v-else-if="availableRoomsList.length === 0" class="py-8 text-center">
+                    <font-awesome-icon class="w-12 h-12" :icon="['far', 'face-frown']" />
+
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No rooms available</h3>
                     <p class="mt-1 text-sm text-gray-500">
                         Try adjusting your date range or try a different time.
                     </p>
                 </div>
 
-                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <div v-for="room in availableRoomsList" :key="room.id"
-                        class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-                        <div class="flex justify-between items-start mb-2">
+                        class="p-4 transition-shadow duration-200 border border-gray-200 rounded-lg hover:shadow-md">
+                        <div class="flex items-start justify-between mb-2">
                             <h3 class="text-lg font-medium text-gray-900">{{ room.roomName }}</h3>
                         </div>
 
                         <button
-                            class="mt-4 w-full px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            class="w-full px-4 py-2 mt-4 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             @click="openBookingModal(room)">
                             Book This Room
                         </button>
@@ -297,31 +294,28 @@ const submitBooking = async () => {
                 </div>
 
                 <div
-                    class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg sm:my-8 sm:align-middle">
-                    <div class="flex justify-between items-center mb-4">
+                    class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle">
+                    <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-medium leading-6 text-gray-900">
                             Book Room: {{ selectedRoom?.roomName }}
                         </h3>
                         <button @click="closeBookingModal" class="text-gray-400 hover:text-gray-500">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <font-awesome-icon :icon="['fas', 'xmark']" class="w-5 h-5" />
                         </button>
                     </div>
 
-                    <div v-if="bookingSuccess" class="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                    <div v-if="bookingSuccess" class="p-3 mb-4 border border-green-200 rounded-md bg-green-50">
                         <p class="text-sm text-green-800">{{ bookingSuccess }}</p>
                     </div>
 
-                    <div v-if="bookingError" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                    <div v-if="bookingError" class="p-3 mb-4 border border-red-200 rounded-md bg-red-50">
                         <p class="text-sm text-red-800">{{ bookingError }}</p>
                     </div>
 
                     <form v-if="!bookingSuccess" @submit.prevent="submitBooking">
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <label class="block mb-1 text-sm font-medium text-gray-700">
                                     Start Date & Time
                                 </label>
                                 <input type="datetime-local" v-model="bookingStartAt" required
@@ -329,39 +323,39 @@ const submitBooking = async () => {
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <label class="block mb-1 text-sm font-medium text-gray-700">
                                     End Date & Time
                                 </label>
                                 <input type="datetime-local" v-model="bookingEndAt" required
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
                             </div>
 
-                            <div class="p-3 bg-gray-50 rounded-md">
+                            <div class="p-3 rounded-md bg-gray-50">
                                 <p class="text-sm text-gray-600">
                                     <span class="font-medium">Room:</span> {{ selectedRoom?.roomName }}
                                 </p>
-                                <p class="text-sm text-gray-600 mt-1">
+                                <p class="mt-1 text-sm text-gray-600">
                                     <span class="font-medium">Room ID:</span> {{ selectedRoom?.id }}
                                 </p>
                             </div>
                         </div>
 
-                        <div class="mt-6 flex justify-end space-x-3">
+                        <div class="flex justify-end mt-6 space-x-3">
                             <button type="button" @click="closeBookingModal"
-                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                                 :disabled="bookingLoading">
                                 Cancel
                             </button>
                             <button type="submit" :disabled="bookingLoading"
-                                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
+                                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
                                 {{ bookingLoading ? 'Booking...' : 'Confirm Booking' }}
                             </button>
                         </div>
                     </form>
 
-                    <div v-if="bookingSuccess" class="mt-6 flex justify-end">
+                    <div v-if="bookingSuccess" class="flex justify-end mt-6">
                         <button @click="closeBookingModal"
-                            class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                             Close
                         </button>
                     </div>

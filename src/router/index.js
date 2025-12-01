@@ -26,6 +26,12 @@ const routes = [
     component: () => import('@/pages/MyBookingPage.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/admin-dashboard',
+    name: 'AdminDashboard',
+    component: () => import('@/pages/AdminDashboardPage.vue'),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

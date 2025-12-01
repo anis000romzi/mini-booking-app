@@ -49,9 +49,14 @@ export async function getAvailableRooms(startAt, endAt) {
   return responseJson.data;
 }
 
-export async function getAllBookings() {
+export async function getAllBookings(
+  page = 1,
+  limit = 10,
+  order = 'desc',
+  orderBy = 'id'
+) {
   const response = await fetchWithAuth(
-    `${BASE_URL}/booking/all-bookings?page=1&limit=100&order=desc&orderBy=id`
+    `${BASE_URL}/booking/all-bookings?page=${page}&limit=${limit}&order=${order}&orderBy=${orderBy}`
   );
 
   const responseJson = await response.json();
@@ -61,7 +66,7 @@ export async function getAllBookings() {
     throw new Error(message);
   }
 
-  return responseJson.data.data;
+  return responseJson.data;
 }
 
 export async function getOwnedBookings(
@@ -81,18 +86,39 @@ export async function getOwnedBookings(
     throw new Error(message);
   }
 
-  return responseJson.data; // Assuming this contains data and pagination info
+  return responseJson.data;
 }
 
-export async function updateBookingsuccess({ bookingId, status }) {
+export async function updateBookingStatus({ bookingId, status }) {
   const response = await fetchWithAuth(
-    `${BASE_URL}/booking/update-success/${bookingId}`,
+    `${BASE_URL}/booking/update-status/${bookingId}`,
     {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ status }),
+    }
+  );
+
+  const responseJson = await response.json();
+  const { success, message } = responseJson;
+
+  if (!success) {
+    throw new Error(message);
+  }
+
+  return responseJson.data;
+}
+
+export async function cancelBooking(bookingId) {
+  const response = await fetchWithAuth(
+    `${BASE_URL}/booking/cancel/${bookingId}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     }
   );
 

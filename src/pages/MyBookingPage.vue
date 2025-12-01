@@ -2,12 +2,11 @@
 import { ref, onMounted } from 'vue';
 import api from '../api';
 import NavBar from "../components/NavBar.vue";
-import { useRouter } from 'vue-router';
 
 const bookings = ref([]);
 const meta = ref({ page: 1, totalPage: 0 });
 const loading = ref(false);
-const router = useRouter();
+const cancelingId = ref(null);
 
 const fetchBookings = async (page = 1) => {
     loading.value = true;
@@ -17,6 +16,7 @@ const fetchBookings = async (page = 1) => {
         meta.value = result.meta;
     } catch (error) {
         console.error('Error:', error);
+        alert('Error:', error);
     } finally {
         loading.value = false;
     }
@@ -32,6 +32,30 @@ const formatDateTime = (dateString) => {
     });
 };
 
+const cancelBooking = async (bookingId) => {
+    if (!confirm('Are you sure you want to cancel this booking?')) {
+        return;
+    }
+
+    cancelingId.value = bookingId;
+
+    try {
+        await api.cancelBooking(bookingId);
+
+        const index = bookings.value.findIndex(booking => booking.id === bookingId);
+        if (index !== -1) {
+            bookings.value[index].status = 'cancelled';
+        }
+
+        alert('Booking cancelled successfully!');
+    } catch (error) {
+        console.error('Error cancelling booking:', error);
+        alert('Failed to cancel booking');
+    } finally {
+        cancelingId.value = null;
+    }
+};
+
 onMounted(() => {
     fetchBookings();
 });
@@ -41,60 +65,111 @@ onMounted(() => {
     <div class="min-h-screen bg-gray-100">
         <NavBar />
 
-        <main class="max-w-7xl mx-auto py-6 px-4">
-            <button
-                class="mb-4 px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
-                @click="() => { router.push('/') }">
-                Back
-            </button>
-            <div class="bg-white shadow rounded-lg p-4">
-                <h2 class="text-lg font-medium text-gray-900 mb-4">My Bookings</h2>
+        <main class="px-4 py-6 mx-auto max-w-7xl">
+            <div class="p-4 bg-white rounded-lg shadow">
+                <h2 class="mb-4 text-lg font-medium text-gray-900">My Bookings</h2>
 
-                <div v-if="loading" class="text-center py-4">
+                <div v-if="loading" class="py-4 text-center">
                     Loading...
                 </div>
 
                 <div v-else-if="bookings.length > 0">
-                    <table class="table-auto w-full text-sm">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="p-2 text-left">Booking ID</th>
-                                <th class="p-2 text-left">Room ID</th>
-                                <th class="p-2 text-left">Room Name</th>
-                                <th class="p-2 text-left">Start Time</th>
-                                <th class="p-2 text-left">End Time</th>
-                                <th class="p-2 text-left">Status</th>
-                                <th class="p-2 text-left">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="booking in bookings" :key="booking.id" class="border-t">
-                                <td class="p-2">{{ booking.id }}</td>
-                                <td class="p-2">{{ booking.roomId }}</td>
-                                <td class="p-2">{{ booking.room.roomName }}</td>
-                                <td class="p-2">{{ formatDateTime(booking.startAt) }}</td>
-                                <td class="p-2">{{ formatDateTime(booking.endAt) }}</td>
-                                <td class="p-2">
-                                    <div class="p-3 bg-blue-50 rounded-md">
-                                        <p class="text-sm text-center text-blue-800">
-                                            {{ booking.status }}
-                                        </p>
-                                    </div>
-                                </td>
-                                <td class="p-2">
-                                    <button
-                                        class="w-full px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                        @click="() => { }">
-                                        Cancel
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="-mx-4 overflow-x-auto sm:mx-0">
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase sm:px-6">
+                                                Booking ID
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase sm:px-6">
+                                                Room ID
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase sm:px-6">
+                                                Room Name
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase sm:px-6">
+                                                Customer Name
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase sm:px-6">
+                                                Start Time
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase sm:px-6">
+                                                End Time
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase sm:px-6">
+                                                Status
+                                            </th>
+                                            <th scope="col"
+                                                class="px-4 py-3 text-xs font-medium tracking-wider text-left uppercase sm:px-6">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr v-for="booking in bookings" :key="booking.id">
+                                            <td
+                                                class="px-4 py-4 text-sm font-medium whitespace-nowrap sm:px-6">
+                                                {{ booking.id }}
+                                            </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
+                                                {{ booking.roomId }}
+                                            </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
+                                                {{ booking.room.roomName }}
+                                            </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
+                                                {{ booking.user.firstName }} {{ booking.user.lastName }}
+                                            </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
+                                                {{ formatDateTime(booking.startAt) }}
+                                            </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
+                                                {{ formatDateTime(booking.endAt) }}
+                                            </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
+                                                <div :class="{
+                                                    'bg-blue-50 text-blue-800': booking.status === 'booked',
+                                                    'bg-green-50 text-green-800': booking.status === 'done',
+                                                    'bg-red-50 text-red-800': booking.status === 'cancelled',
+                                                    'bg-gray-50 text-gray-800': !['booked', 'done', 'cancelled'].includes(booking.status)
+                                                }"
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                                                    {{ booking.status }}
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
+                                                <button
+                                                    v-if="booking.status !== 'cancelled' && booking.status !== 'done'"
+                                                    :disabled="cancelingId === booking.id" :class="{
+                                                        'px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500': cancelingId !== booking.id,
+                                                        'px-3 py-1.5 bg-red-400 text-white text-xs font-medium rounded-md cursor-not-allowed': cancelingId === booking.id
+                                                    }" @click="() => cancelBooking(booking.id)">
+                                                    <span v-if="cancelingId === booking.id">Cancelling...</span>
+                                                    <span v-else>Cancel</span>
+                                                </button>
+                                                <span v-else class="text-xs italic text-gray-500">
+                                                    Cannot cancel
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
-                    <div class="mt-4 flex items-center justify-center gap-2">
+                    <div class="flex items-center justify-center gap-2 mt-4">
                         <button @click="fetchBookings(meta.page - 1)" :disabled="meta.page <= 1"
-                            class="px-3 py-1 border rounded disabled:opacity-50">
+                            class="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50">
                             Previous
                         </button>
 
@@ -103,13 +178,13 @@ onMounted(() => {
                         </span>
 
                         <button @click="fetchBookings(meta.page + 1)" :disabled="meta.page >= meta.totalPage"
-                            class="px-3 py-1 border rounded disabled:opacity-50">
+                            class="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50">
                             Next
                         </button>
                     </div>
                 </div>
 
-                <div v-else class="text-center py-8 text-gray-500">
+                <div v-else class="py-8 text-center text-gray-500">
                     No bookings found.
                 </div>
             </div>
