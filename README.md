@@ -19,11 +19,11 @@ Create environment
 
 Run the application
 ```bash
-$ npm run dev
+  npm run dev
 ```
 
 Build the application
 ```bash
-$ npm run build
+  npm run build
 ```
     
