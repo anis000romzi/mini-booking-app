@@ -124,10 +124,10 @@ onMounted(() => {
                                                 {{ booking.roomId }}
                                             </td>
                                             <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
-                                                {{ booking.room.roomName }}
+                                                {{ booking.roomName }}
                                             </td>
                                             <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
-                                                {{ booking.user.firstName }} {{ booking.user.lastName }}
+                                                {{ booking.customerName }}
                                             </td>
                                             <td class="px-4 py-4 text-sm whitespace-nowrap sm:px-6">
                                                 {{ formatDateTime(booking.startAt) }}
@@ -168,7 +168,7 @@ onMounted(() => {
                     </div>
 
                     <div class="flex items-center justify-center gap-2 mt-4">
-                        <button @click="fetchBookings(meta.page - 1)" :disabled="meta.page <= 1"
+                        <button @click="fetchBookings(Number(meta.page) - 1)" :disabled="Number(meta.page) <= 1"
                             class="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50">
                             Previous
                         </button>
@@ -177,7 +177,7 @@ onMounted(() => {
                             Page {{ meta.page }} of {{ meta.totalPage }}
                         </span>
 
-                        <button @click="fetchBookings(meta.page + 1)" :disabled="meta.page >= meta.totalPage"
+                        <button @click="fetchBookings(Number(meta.page) + 1)" :disabled="Number(meta.page) >= Number(meta.totalPage)"
                             class="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-50">
                             Next
                         </button>
